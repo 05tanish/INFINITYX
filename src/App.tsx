@@ -1,3 +1,8 @@
+import { useEffect } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from 'lenis';
+
 import Layout from './components/layout/Layout';
 import Navigation from './components/layout/Navigation';
 import Footer from './components/layout/Footer';
@@ -9,30 +14,71 @@ import TestimonialsSection from './components/sections/TestimonialsSection';
 import WhyChooseSection from './components/sections/WhyChooseSection';
 import FinalCTASection from './components/sections/FinalCTASection';
 import ContactSection from './components/sections/ContactSection';
+import CustomCursor from './components/ui/CustomCursor';
+
+// Register GSAP plugins globally
+gsap.registerPlugin(ScrollTrigger);
 
 const sections = [
   { id: 'hero', label: 'Home' },
   { id: 'services', label: 'Services' },
-  { id: 'pricing', label: 'Pricing' },
   { id: 'portfolio', label: 'Portfolio' },
+  { id: 'pricing', label: 'Pricing' },
   { id: 'testimonials', label: 'Testimonials' },
   { id: 'contact', label: 'Contact' },
 ];
 
 function App() {
+  useEffect(() => {
+    // React 19 safe Vanilla Lenis execution
+    const lenis = new Lenis({
+      lerp: 0.08,
+      smoothWheel: true,
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+
+    const updateLenis = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
+    gsap.ticker.add(updateLenis);
+    gsap.ticker.lagSmoothing(0);
+
+    return () => {
+      lenis.destroy();
+      gsap.ticker.remove(updateLenis);
+    };
+  }, []);
+
   return (
-    <Layout>
-      <Navigation sections={sections} logo="Infinityx" />
-      <HeroSection />
-      <ServicesSection />
-      <PricingSection />
-      <PortfolioSection />
-      <TestimonialsSection />
-      <WhyChooseSection />
-      <FinalCTASection />
-      <ContactSection />
-      <Footer logo="Infinityx" />
-    </Layout>
+    <>
+      <CustomCursor />
+      
+      {/* Global SVG Filter for Liquid Gooey effects */}
+      <svg className="hidden h-0 w-0 absolute pointer-events-none">
+        <defs>
+          <filter id="goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
+            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="goo" />
+            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+          </filter>
+        </defs>
+      </svg>
+
+      <Layout>
+        <Navigation sections={sections} logo="Infinityx" />
+        <HeroSection />
+        <ServicesSection />
+        <PortfolioSection />
+        <WhyChooseSection />
+        <PricingSection />
+        <TestimonialsSection />
+        <FinalCTASection />
+        <ContactSection />
+        <Footer logo="Infinityx" />
+      </Layout>
+    </>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Mesh as ThreeMesh } from 'three';
+
 
 interface DataCubeProps {
   position?: [number, number, number];
