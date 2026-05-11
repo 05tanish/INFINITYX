@@ -22,19 +22,26 @@ const HeroSection = ({ onGetStarted, onBookCall }: HeroSectionProps) => {
     }
   };
 
+  const scrollToPortfolio = () => {
+    const portfolioSection = document.getElementById('portfolio');
+    if (portfolioSection) {
+      portfolioSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   const handleGetStarted = () => onGetStarted ? onGetStarted() : scrollToContact();
-  const handleBookCall = () => onBookCall ? onBookCall() : scrollToContact();
+  const handleBookCall = () => onBookCall ? onBookCall() : scrollToPortfolio();
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Create an Apple-style Scrub Timeline locked to the container
+      // Apple-style Scrub Timeline locked to the container
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: '+=400%', // 4 window heights of cinematic scrolling
+          end: '+=400%',
           pin: true,
-          scrub: 1, // Smooth scrub
+          scrub: 1,
         }
       });
 
@@ -82,15 +89,22 @@ const HeroSection = ({ onGetStarted, onBookCall }: HeroSectionProps) => {
 
   return (
     <>
-      {/* 3D Global Ecosystem pinned independently across the window */}
-      {/* <HeroScene /> */}
-      
-      <section 
-        ref={containerRef} 
-        id="hero" 
-        className="relative h-screen w-full flex items-center justify-center pointer-events-none"
+      <section
+        ref={containerRef}
+        id="hero"
+        className="relative h-screen w-full flex items-center justify-center pointer-events-none noise-overlay overflow-hidden"
       >
-        <div className="absolute inset-0 z-0 bg-brand-black/40 backdrop-blur-[2px]" />
+        {/* Live 3D Hero Scene as background */}
+        <div className="absolute inset-0 z-0">
+          <HeroScene />
+        </div>
+
+        {/* Dark overlay so text is legible over 3D */}
+        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-brand-black/60 via-brand-black/30 to-brand-black/70" />
+
+        {/* Ambient glow orbs */}
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-brand-blue-glow rounded-full blur-[140px] opacity-20 pointer-events-none mix-blend-screen z-[2]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[rgba(138,43,226,0.2)] rounded-full blur-[120px] opacity-25 pointer-events-none mix-blend-screen z-[2]" />
 
         <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center h-full flex flex-col justify-center pointer-events-auto">
           
@@ -100,49 +114,76 @@ const HeroSection = ({ onGetStarted, onBookCall }: HeroSectionProps) => {
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full glass-premium mb-8 uppercase tracking-widest text-xs font-bold shadow-[0_0_15px_rgba(62,99,221,0.3)]"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
             >
-              <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse-glow"></div>
+              <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
               <span className="text-gray-300">Next-Gen Digital Solutions</span>
             </motion.div>
 
-            <h1 className="text-7xl sm:text-8xl md:text-9xl font-extrabold mb-6 leading-[1.0] tracking-tighter mix-blend-screen text-brand-white drop-shadow-2xl">
+            <motion.h1
+              className="text-7xl sm:text-8xl md:text-9xl font-extrabold mb-6 leading-[1.0] tracking-tighter text-brand-white drop-shadow-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+            >
               Build The <br /> <span className="text-gradient">Future.</span>
-            </h1>
+            </motion.h1>
             
-            <p className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-2xl font-medium leading-relaxed drop-shadow-lg">
+            <motion.p
+              className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-2xl font-medium leading-relaxed drop-shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
               Scroll down to discover our ecosystem.
-            </p>
+            </motion.p>
           </div>
 
-          {/* Phase 2: Engagement / 3D Detail view */}
+          {/* Phase 2: Value Proposition */}
           <div ref={textPhase2Ref} className="absolute inset-0 flex flex-col items-center justify-center px-4 w-full h-full pb-32">
-             <h2 className="text-5xl sm:text-7xl font-bold mb-4 text-brand-white">
-               Apple-style Precision.
-             </h2>
-             <p className="text-2xl text-gray-400 max-w-2xl mx-auto">
-               Every pixel mapped mathematically to user interaction. We forge high-fidelity models.
-             </p>
+            <motion.div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-premium mb-8 uppercase tracking-widest text-xs font-bold">
+              <div className="w-2 h-2 rounded-full bg-brand-purple"></div>
+              <span className="text-gray-300">Content · Design · Development · Security</span>
+            </motion.div>
+            <h2 className="text-5xl sm:text-7xl font-bold mb-6 text-brand-white leading-tight">
+              One Agency.<br/>
+              <span className="text-gradient">Infinite Growth.</span>
+            </h2>
+            <p className="text-xl sm:text-2xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              We don't just build websites. We engineer digital ecosystems that capture attention, convert visitors, and drive real revenue.
+            </p>
           </div>
 
           {/* Phase 3: Final Call To Action */}
           <div ref={textPhase3Ref} className="absolute inset-0 flex flex-col items-center justify-center px-4 w-full h-full">
-             <h2 className="text-6xl sm:text-8xl font-black mb-8 text-brand-white tracking-tighter">
-               Ready to Launch?
-             </h2>
-             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <button 
-                  onClick={handleGetStarted}
-                  className="px-8 py-4 bg-brand-white text-brand-black font-extrabold text-xl rounded-full transition-transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.4)] pointer-events-auto"
-                >
-                  Start Your Project
-                </button>
-                <button 
-                  onClick={handleBookCall}
-                  className="px-8 py-4 glass-premium text-brand-white font-bold text-xl rounded-full transition-transform hover:scale-105 hover:bg-white/10 pointer-events-auto"
-                >
-                  View Our Work 
-                </button>
-             </div>
+            <h2 className="text-6xl sm:text-8xl font-black mb-4 text-brand-white tracking-tighter">
+              Ready to <span className="text-gradient">Launch?</span>
+            </h2>
+            <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto">
+              Join 50+ brands that trusted Infinityx to scale their digital presence.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <motion.button
+                id="hero-start-project-btn"
+                onClick={handleGetStarted}
+                className="px-10 py-4 font-extrabold text-lg rounded-full text-white shadow-[0_0_30px_rgba(62,99,221,0.5)] pointer-events-auto relative overflow-hidden group"
+                style={{ background: 'linear-gradient(135deg, #3E63DD, #8A2BE2)' }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                <span className="relative z-10">Start Your Project →</span>
+                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              </motion.button>
+              <motion.button
+                id="hero-view-work-btn"
+                onClick={handleBookCall}
+                className="px-10 py-4 glass-premium text-brand-white font-bold text-lg rounded-full transition-all hover:bg-white/10 pointer-events-auto border border-white/10"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+              >
+                View Our Work
+              </motion.button>
+            </div>
           </div>
 
         </div>
@@ -155,7 +196,11 @@ const HeroSection = ({ onGetStarted, onBookCall }: HeroSectionProps) => {
         >
           <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2 text-center">Scroll</div>
           <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center p-1 mx-auto">
-            <div className="w-1.5 h-1.5 bg-brand-blue rounded-full"></div>
+            <motion.div
+              className="w-1.5 h-1.5 bg-brand-blue rounded-full"
+              animate={{ y: [0, 16, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            />
           </div>
         </motion.div>
       </section>

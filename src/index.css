@@ -28,6 +28,8 @@
   --shadow-glass: inset 0 1px 1px rgba(255, 255, 255, 0.1);
 }
 
+/* ===================== KEYFRAMES ===================== */
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-15px); }
@@ -43,6 +45,51 @@
   100% { background-position: 100% 50%; }
 }
 
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes counter-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2%, -3%); }
+  20% { transform: translate(3%, 2%); }
+  30% { transform: translate(-1%, 4%); }
+  40% { transform: translate(2%, -2%); }
+  50% { transform: translate(-3%, 1%); }
+  60% { transform: translate(1%, 3%); }
+  70% { transform: translate(-2%, -1%); }
+  80% { transform: translate(3%, -3%); }
+  90% { transform: translate(-1%, 2%); }
+}
+
+/* ===================== BASE ===================== */
+
 body {
   font-family: 'Outfit', 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -57,6 +104,8 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.04em;
   font-weight: 700;
 }
+
+/* ===================== GLASS EFFECTS ===================== */
 
 /* Ultra Premium glass effect */
 .glass-premium {
@@ -81,9 +130,20 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(62, 99, 221, 0.1);
 }
 
-/* Gradient Text Utilities */
+/* ===================== GRADIENT TEXT ===================== */
+
+/* Vibrant blue-to-purple brand gradient */
 .text-gradient {
-  background: linear-gradient(to right, #FFFFFF, #A1A1AA);
+  background: linear-gradient(135deg, #3E63DD 0%, #9B59FF 50%, #8A2BE2 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(135deg, #E5C07B 0%, #F4D98A 50%, #D4A843 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -95,6 +155,15 @@ h1, h2, h3, h4, h5, h6 {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+.text-gradient-white {
+  background: linear-gradient(to right, #FFFFFF, #A1A1AA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===================== UTILITIES ===================== */
 
 /* Subtle elevation */
 .elevated {
@@ -115,4 +184,109 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   background: linear-gradient(180deg, #3E63DD, #8A2BE2);
   border-radius: 4px;
+}
+
+/* ===================== MARQUEE ===================== */
+
+.marquee-container {
+  overflow: hidden;
+  position: relative;
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 35s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.marquee-track-reverse {
+  display: flex;
+  width: max-content;
+  animation: marquee-reverse 40s linear infinite;
+}
+
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+/* ===================== SCROLL PROGRESS ===================== */
+
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #3E63DD, #8A2BE2, #E5C07B);
+  z-index: 100;
+  transform-origin: left;
+}
+
+/* ===================== NOISE / GRAIN ===================== */
+
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  animation: grain 8s steps(10) infinite;
+  z-index: 1;
+}
+
+/* ===================== SHIMMER LOADING ===================== */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.06) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ===================== PROCESS TIMELINE ===================== */
+
+.process-connector {
+  position: relative;
+}
+
+.process-connector::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -50%;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(62, 99, 221, 0.5), rgba(138, 43, 226, 0.2));
+}
+
+/* ===================== BUTTON GLOW ===================== */
+
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, #3E63DD, #8A2BE2, #3E63DD);
+  background-size: 200%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradient-shift 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn-glow:hover::before {
+  opacity: 1;
 }
