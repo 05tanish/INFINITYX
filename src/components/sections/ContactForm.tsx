@@ -1,194 +1,145 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
-import Input from '../ui/Input';
-import Select from '../ui/Select';
-import Button from '../ui/Button';
-import { contactFormSchema, type ContactFormSchema } from '../../lib/validation';
 
-const budgetOptions = [
-  { value: 'under-10k', label: 'Under ₹10,000' },
-  { value: '10k-30k', label: '₹10,000 - ₹30,000' },
-  { value: '30k-80k', label: '₹30,000 - ₹80,000' },
-  { value: '80k-plus', label: '₹80,000+' },
-  { value: 'custom', label: 'Custom Quote' },
+const projectTypes = [
+  { value: 'web-app', label: 'Web Application' },
+  { value: 'mobile-app', label: 'Mobile App (iOS/Android)' },
+  { value: 'saas', label: 'SaaS Platform' },
+  { value: 'automation', label: 'Automation & Scripts' },
+  { value: 'cybersecurity', label: 'Cybersecurity Audit' },
+  { value: 'other', label: 'Other / Custom' },
 ];
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
+const budgetOptions = [
+  { value: 'under-50k', label: 'Under ₹50,000' },
+  { value: '50k-1.5L', label: '₹50,000 - ₹1,50,000' },
+  { value: '1.5L-5L', label: '₹1,50,000 - ₹5,00,000' },
+  { value: '5L-plus', label: '₹5,00,000+' },
+];
 
 const ContactForm = () => {
-  const [formState, setFormState] = useState<FormState>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ContactFormSchema>({
-    resolver: zodResolver(contactFormSchema),
-  });
-
-  const onSubmit = async (data: ContactFormSchema) => {
+  const onSubmit = async (data: any) => {
     setFormState('submitting');
-    setErrorMessage('');
-
     try {
-      // Mock API call - replace with actual submission logic
+      // Mock API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      console.log('Form submitted:', data);
-      
+      console.log('Project Inquiry:', data);
       setFormState('success');
       reset();
-      
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setFormState('idle');
-      }, 5000);
+      setTimeout(() => setFormState('idle'), 5000);
     } catch (error) {
       setFormState('error');
-      setErrorMessage('Something went wrong. Please try again later.');
     }
   };
 
   return (
-    <motion.form
-      onSubmit={handleSubmit(onSubmit)}
-      className="max-w-3xl mx-auto"
-      initial={{ opacity: 0, y: 30 }}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+      className="pro-card p-8 md:p-10 max-w-3xl mx-auto"
     >
-      <div className="glass-premium rounded-lg p-8 md:p-10 elevated">
-        <div className="space-y-6">
-          {/* Name and Email Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Name"
-              type="text"
-              placeholder="Your full name"
-              required
-              error={errors.name?.message}
-              {...register('name')}
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        
+        {/* Personal Details Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="form-label">Full Name</label>
+            <input 
+              {...register('name', { required: true })} 
+              className="form-input" 
+              placeholder="Jane Doe" 
             />
-
-            <Input
-              label="Email"
-              type="email"
-              placeholder="your.email@example.com"
-              required
-              error={errors.email?.message}
-              {...register('email')}
-            />
+            {errors.name && <span className="text-xs text-red-500 mt-1 block">Required</span>}
           </div>
-
-          {/* Business Type and Budget Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Business Type"
-              type="text"
-              placeholder="E.g., E-commerce, SaaS, Agency"
-              required
-              error={errors.businessType?.message}
-              {...register('businessType')}
+          <div>
+            <label className="form-label">Work Email</label>
+            <input 
+              type="email" 
+              {...register('email', { required: true })} 
+              className="form-input" 
+              placeholder="jane@company.com" 
             />
-
-            <Select
-              label="Budget Range (Optional)"
-              options={budgetOptions}
-              placeholder="Select your budget range"
-              error={errors.budgetRange?.message}
-              {...register('budgetRange')}
-            />
+            {errors.email && <span className="text-xs text-red-500 mt-1 block">Required</span>}
           </div>
-
-          {/* Message Field */}
-          <Input
-            label="Message"
-            isTextarea
-            placeholder="Tell us about your project and goals..."
-            required
-            error={errors.message?.message}
-            {...register('message')}
-          />
-
-          {/* Submit Button */}
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            className="w-full"
-            disabled={formState === 'submitting'}
-          >
-            {formState === 'submitting' ? (
-              <span className="flex items-center justify-center">
-                <svg
-                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Sending...
-              </span>
-            ) : (
-              'Send Message'
-            )}
-          </Button>
-
-          {/* Success Message */}
-          {formState === 'success' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-5 glass-premium rounded-lg border border-green-500/50"
-            >
-              <div className="flex items-center gap-3">
-                <svg className="w-6 h-6 text-green-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                <div>
-                  <p className="text-green-500 font-medium">Message sent successfully!</p>
-                  <p className="text-gray-400 text-sm mt-1">We'll get back to you within 24 hours.</p>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Error Message */}
-          {formState === 'error' && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="p-5 glass-premium rounded-lg border border-red-500/50"
-            >
-              <div className="flex items-center gap-3">
-                <svg className="w-6 h-6 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <p className="text-red-500">{errorMessage}</p>
-              </div>
-            </motion.div>
-          )}
         </div>
-      </div>
-    </motion.form>
+
+        {/* Project Details Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="form-label">Project Type</label>
+            <select 
+              {...register('projectType', { required: true })} 
+              className="form-input appearance-none bg-brand-surface"
+            >
+              <option value="" disabled selected>Select project type...</option>
+              {projectTypes.map(pt => (
+                <option key={pt.value} value={pt.value}>{pt.label}</option>
+              ))}
+            </select>
+            {errors.projectType && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+          </div>
+          <div>
+            <label className="form-label">Estimated Budget (INR)</label>
+            <select 
+              {...register('budget', { required: true })} 
+              className="form-input appearance-none bg-brand-surface"
+            >
+              <option value="" disabled selected>Select budget range...</option>
+              {budgetOptions.map(b => (
+                <option key={b.value} value={b.value}>{b.label}</option>
+              ))}
+            </select>
+            {errors.budget && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+          </div>
+        </div>
+
+        {/* Requirements */}
+        <div>
+          <label className="form-label">Project Requirements</label>
+          <textarea 
+            {...register('requirements', { required: true, minLength: 20 })} 
+            className="form-input min-h-[120px] resize-y" 
+            placeholder="Tell us about the problem you're trying to solve, target audience, and key features..." 
+          />
+          {errors.requirements && <span className="text-xs text-red-500 mt-1 block">Please provide more details (min 20 chars).</span>}
+        </div>
+
+        {/* Submit */}
+        <button 
+          type="submit" 
+          disabled={formState === 'submitting'}
+          className="btn-primary w-full py-4 text-base mt-2"
+        >
+          {formState === 'submitting' ? 'Submitting Inquiry...' : 'Submit Project Inquiry'}
+        </button>
+
+        {/* Status Messages */}
+        {formState === 'success' && (
+          <div className="p-4 mt-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-3">
+            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <p className="text-sm text-green-500">Inquiry submitted successfully. We'll be in touch within 24 hours.</p>
+          </div>
+        )}
+        
+        {formState === 'error' && (
+          <div className="p-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3">
+            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-red-500">Something went wrong. Please email us directly at hello@infinityx.com.</p>
+          </div>
+        )}
+      </form>
+    </motion.div>
   );
 };
 

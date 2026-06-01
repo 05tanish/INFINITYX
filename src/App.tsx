@@ -8,10 +8,12 @@ import Navigation from './components/layout/Navigation';
 import Footer from './components/layout/Footer';
 import HeroSection from './components/sections/HeroSection';
 import ServicesSection from './components/sections/ServicesSection';
+import StatsSection from './components/sections/StatsSection';
 import PricingSection from './components/sections/PricingSection';
 import PortfolioSection from './components/sections/PortfolioSection';
 import TestimonialsSection from './components/sections/TestimonialsSection';
 import WhyChooseSection from './components/sections/WhyChooseSection';
+import ProcessSection from './components/sections/ProcessSection';
 import FinalCTASection from './components/sections/FinalCTASection';
 import ContactSection from './components/sections/ContactSection';
 import CustomCursor from './components/ui/CustomCursor';
@@ -70,8 +72,10 @@ function App() {
         <Navigation sections={sections} logo="Infinityx" />
         <HeroSection />
         <ServicesSection />
+        <StatsSection />
         <PortfolioSection />
         <WhyChooseSection />
+        <ProcessSection />
         <PricingSection />
         <TestimonialsSection />
         <FinalCTASection />

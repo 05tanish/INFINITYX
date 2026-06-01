@@ -1,210 +1,169 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import { motion } from 'framer-motion';
-import gsap from 'gsap';
-
-import HeroScene from '../3d/HeroScene';
+import Magnetic from '../ui/Magnetic';
 
 export interface HeroSectionProps {
   onGetStarted?: () => void;
-  onBookCall?: () => void;
 }
 
-const HeroSection = ({ onGetStarted, onBookCall }: HeroSectionProps) => {
+// A simple stagger animation for the words
+const headline = "WE BUILD SOFTWARE THAT SCALES.";
+const words = headline.split(" ");
+
+const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
   const containerRef = useRef<HTMLElement>(null);
-  const textPhase1Ref = useRef<HTMLDivElement>(null);
-  const textPhase2Ref = useRef<HTMLDivElement>(null);
-  const textPhase3Ref = useRef<HTMLDivElement>(null);
 
   const scrollToContact = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollToPortfolio = () => {
-    const portfolioSection = document.getElementById('portfolio');
-    if (portfolioSection) {
-      portfolioSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  const scrollToWork = () => {
+    document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleGetStarted = () => onGetStarted ? onGetStarted() : scrollToContact();
-  const handleBookCall = () => onBookCall ? onBookCall() : scrollToPortfolio();
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Apple-style Scrub Timeline locked to the container
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top top',
-          end: '+=400%',
-          pin: true,
-          scrub: 1,
-        }
-      });
-
-      // Initially Phase 1 is visible, hide Phase 2 and 3
-      gsap.set([textPhase2Ref.current, textPhase3Ref.current], { opacity: 0, scale: 0.8, y: 50, pointerEvents: 'none' });
-
-      // Phase 1 -> Phase 2 Transition
-      tl.to(textPhase1Ref.current, {
-        opacity: 0,
-        scale: 1.1,
-        y: -100,
-        duration: 1,
-        pointerEvents: 'none'
-      }, 0);
-
-      tl.to(textPhase2Ref.current, {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 1,
-        pointerEvents: 'auto'
-      }, 0.5);
-
-      // Phase 2 -> Phase 3 Transition
-      tl.to(textPhase2Ref.current, {
-        opacity: 0,
-        scale: 1.1,
-        y: -100,
-        duration: 1,
-        pointerEvents: 'none'
-      }, 2);
-
-      tl.to(textPhase3Ref.current, {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 1,
-        pointerEvents: 'auto'
-      }, 2.5);
-
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
-    <>
-      <section
-        ref={containerRef}
-        id="hero"
-        className="relative h-screen w-full flex items-center justify-center pointer-events-none noise-overlay overflow-hidden"
-      >
-        {/* Live 3D Hero Scene as background */}
-        <div className="absolute inset-0 z-0">
-          <HeroScene />
-        </div>
+    <section
+      ref={containerRef}
+      id="hero"
+      className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-brand-black"
+    >
+      {/* Background Effects */}
+      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse at top, rgba(37,99,235,0.12) 0%, transparent 60%)' }}
+      />
+      <div className="absolute top-0 left-0 right-0 h-px bg-brand-border" />
 
-        {/* Dark overlay so text is legible over 3D */}
-        <div className="absolute inset-0 z-[1] bg-gradient-to-b from-brand-black/60 via-brand-black/30 to-brand-black/70" />
+      {/* Main Content */}
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center flex-grow pt-24 pb-12">
+        
 
-        {/* Ambient glow orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-brand-blue-glow rounded-full blur-[140px] opacity-20 pointer-events-none mix-blend-screen z-[2]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-[rgba(138,43,226,0.2)] rounded-full blur-[120px] opacity-25 pointer-events-none mix-blend-screen z-[2]" />
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center h-full flex flex-col justify-center pointer-events-auto">
-          
-          {/* Phase 1: Massive Establishing Intro */}
-          <div ref={textPhase1Ref} className="absolute inset-0 flex flex-col items-center justify-center px-4 w-full h-full">
-            <motion.div
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full glass-premium mb-8 uppercase tracking-widest text-xs font-bold shadow-[0_0_15px_rgba(62,99,221,0.3)]"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <div className="w-2 h-2 rounded-full bg-brand-blue animate-pulse"></div>
-              <span className="text-gray-300">Next-Gen Digital Solutions</span>
-            </motion.div>
-
-            <motion.h1
-              className="text-7xl sm:text-8xl md:text-9xl font-extrabold mb-6 leading-[1.0] tracking-tighter text-brand-white drop-shadow-2xl"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-            >
-              Build The <br /> <span className="text-gradient">Future.</span>
-            </motion.h1>
-            
-            <motion.p
-              className="text-xl sm:text-2xl text-gray-300 mb-12 max-w-2xl font-medium leading-relaxed drop-shadow-lg"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-            >
-              Scroll down to discover our ecosystem.
-            </motion.p>
-          </div>
-
-          {/* Phase 2: Value Proposition */}
-          <div ref={textPhase2Ref} className="absolute inset-0 flex flex-col items-center justify-center px-4 w-full h-full pb-32">
-            <motion.div className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-premium mb-8 uppercase tracking-widest text-xs font-bold">
-              <div className="w-2 h-2 rounded-full bg-brand-purple"></div>
-              <span className="text-gray-300">Content · Design · Development · Security</span>
-            </motion.div>
-            <h2 className="text-5xl sm:text-7xl font-bold mb-6 text-brand-white leading-tight">
-              One Agency.<br/>
-              <span className="text-gradient">Infinite Growth.</span>
-            </h2>
-            <p className="text-xl sm:text-2xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              We don't just build websites. We engineer digital ecosystems that capture attention, convert visitors, and drive real revenue.
-            </p>
-          </div>
-
-          {/* Phase 3: Final Call To Action */}
-          <div ref={textPhase3Ref} className="absolute inset-0 flex flex-col items-center justify-center px-4 w-full h-full">
-            <h2 className="text-6xl sm:text-8xl font-black mb-4 text-brand-white tracking-tighter">
-              Ready to <span className="text-gradient">Launch?</span>
-            </h2>
-            <p className="text-xl text-gray-400 mb-10 max-w-xl mx-auto">
-              Join 50+ brands that trusted Infinityx to scale their digital presence.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <motion.button
-                id="hero-start-project-btn"
-                onClick={handleGetStarted}
-                className="px-10 py-4 font-extrabold text-lg rounded-full text-white shadow-[0_0_30px_rgba(62,99,221,0.5)] pointer-events-auto relative overflow-hidden group"
-                style={{ background: 'linear-gradient(135deg, #3E63DD, #8A2BE2)' }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
+        {/* Masked Headline Reveal */}
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8 max-w-5xl">
+          {words.map((word, idx) => (
+            <div key={idx} className="overflow-hidden py-2">
+              <motion.span
+                className="inline-block text-6xl sm:text-7xl md:text-8xl lg:text-[8rem] font-black tracking-tighter text-white leading-[0.9]"
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                transition={{
+                  duration: 0.8,
+                  ease: [0.16, 1, 0.3, 1],
+                  delay: 0.1 + idx * 0.05
+                }}
               >
-                <span className="relative z-10">Start Your Project →</span>
-                <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </motion.button>
-              <motion.button
-                id="hero-view-work-btn"
-                onClick={handleBookCall}
-                className="px-10 py-4 glass-premium text-brand-white font-bold text-lg rounded-full transition-all hover:bg-white/10 pointer-events-auto border border-white/10"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                View Our Work
-              </motion.button>
+                {word === "SOFTWARE" ? <span className="text-brand-blue">{word}</span> : word}
+              </motion.span>
             </div>
-          </div>
-
+          ))}
         </div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 pointer-events-none"
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        <motion.p
+          className="text-lg md:text-xl text-text-secondary mb-12 max-w-2xl text-center leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
         >
-          <div className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-2 text-center">Scroll</div>
-          <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center p-1 mx-auto">
-            <motion.div
-              className="w-1.5 h-1.5 bg-brand-blue rounded-full"
-              animate={{ y: [0, 16, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          We turn complex requirements into clean, production-ready systems. Specializing in SaaS, mobile apps, and business automation.
+        </motion.p>
+
+        <motion.div
+          className="flex flex-col sm:flex-row items-center gap-4"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.8 }}
+        >
+          <Magnetic>
+            <motion.button
+              id="hero-start-project-btn"
+              onClick={handleGetStarted}
+              className="btn-primary text-base px-8 py-4"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              Start a Project →
+            </motion.button>
+          </Magnetic>
+          <Magnetic>
+            <motion.button
+              id="hero-view-work-btn"
+              onClick={scrollToWork}
+              className="btn-secondary text-base px-8 py-4"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              View Our Work
+            </motion.button>
+          </Magnetic>
+        </motion.div>
+      </div>
+
+      {/* Bottom Anchored Strip */}
+      <motion.div 
+        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+      >
+        {/* Left: Stats */}
+        <div className="flex items-center gap-8">
+          {[
+            { value: '50+', label: 'Projects' },
+            { value: '100%', label: 'Retention' },
+          ].map(stat => (
+            <div key={stat.label} className="flex flex-col">
+              <span className="text-xl font-bold text-white">{stat.value}</span>
+              <span className="text-[10px] text-text-muted font-medium uppercase tracking-widest mt-1">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Center: Scroll Indicator */}
+        <div className="hidden md:flex flex-col items-center gap-3">
+          <span className="text-[9px] text-text-muted uppercase tracking-widest font-semibold">Scroll</span>
+          <div className="w-px h-12 bg-brand-border relative overflow-hidden">
+            <motion.div 
+              className="absolute top-0 left-0 w-full h-full bg-brand-blue"
+              initial={{ y: "-100%" }}
+              animate={{ y: "100%" }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
-        </motion.div>
-      </section>
-    </>
+        </div>
+
+        {/* Right: Trust */}
+        <div className="flex items-center gap-3">
+          <div className="flex -space-x-2">
+            {['RK','PS','AP'].map((init, i) => (
+              <div
+                key={i}
+                className="w-8 h-8 rounded-full border-2 border-brand-black flex items-center justify-center text-[10px] font-bold text-white"
+                style={{ background: i === 0 ? '#2563EB' : i === 1 ? '#374151' : '#1F2937' }}
+              >
+                {init}
+              </div>
+            ))}
+          </div>
+          <div>
+            <div className="flex items-center gap-1">
+              {[1,2,3,4,5].map(s => (
+                <svg key={s} className="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider">Trusted by 50+ founders</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Bottom border */}
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-brand-border" />
+    </section>
   );
 };
 

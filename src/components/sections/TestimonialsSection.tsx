@@ -1,114 +1,90 @@
 import { motion } from 'framer-motion';
-import Card from '../ui/Card';
 import { testimonials, type Testimonial } from '../../lib/constants';
 
-interface TestimonialCardProps {
-  testimonial: Testimonial;
-  index: number;
-}
+const TestimonialCard = ({ testimonial, index }: { testimonial: Testimonial; index: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.4, delay: index * 0.1 }}
+    className="pro-card p-8 flex flex-col h-full"
+  >
+    {/* Quote Icon */}
+    <div className="mb-6">
+      <svg className="w-8 h-8 text-brand-muted" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+      </svg>
+    </div>
 
-const TestimonialCard = ({ testimonial, index }: TestimonialCardProps) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-100px' }}
-      transition={{ duration: 0.6, delay: index * 0.15 }}
-    >
-      <Card variant="testimonial" className="h-full flex flex-col">
-        {/* Quote Icon */}
-        <div className="inline-flex p-3 rounded-lg bg-brand-navy/50 mb-6 w-fit">
-          <svg className="w-8 h-8 text-brand-blue" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-          </svg>
-        </div>
+    {/* Review */}
+    <p className="text-text-primary text-sm leading-relaxed flex-grow mb-8 font-medium">
+      "{testimonial.review}"
+    </p>
 
-        {/* Review Text */}
-        <p className="text-gray-300 mb-6 leading-relaxed flex-grow text-base">
-          "{testimonial.review}"
-        </p>
-
-        {/* Rating Stars */}
-        {testimonial.rating && (
-          <div className="flex gap-1 mb-6">
-            {[...Array(testimonial.rating)].map((_, i) => (
-              <svg
-                key={i}
-                className="w-5 h-5 text-brand-gold"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            ))}
+    {/* Footer Info */}
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-6 border-t border-brand-border">
+      <div className="flex items-center gap-3">
+        {testimonial.avatar ? (
+          <img
+            src={testimonial.avatar}
+            alt={testimonial.clientName}
+            className="w-10 h-10 rounded-full object-cover grayscale opacity-80"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-brand-muted flex items-center justify-center text-text-muted font-bold text-sm">
+            {testimonial.clientName.charAt(0)}
           </div>
         )}
-
-        {/* Client Info */}
-        <div className="flex items-center pt-4 border-t border-brand-gray-800/50">
-          {testimonial.avatar && (
-            <img
-              src={testimonial.avatar}
-              alt={testimonial.clientName}
-              className="w-12 h-12 rounded-full mr-4 object-cover ring-2 ring-brand-blue/20"
-            />
-          )}
-          <div>
-            <h4 className="text-brand-white font-semibold text-base">
-              {testimonial.clientName}
-            </h4>
-            <p className="text-gray-400 text-sm">
-              {testimonial.businessType}
-            </p>
+        <div>
+          <div className="text-sm font-bold text-white">{testimonial.clientName}</div>
+          <div className="text-xs text-text-muted">
+            {testimonial.role}, {testimonial.company}
           </div>
         </div>
-      </Card>
-    </motion.div>
-  );
-};
-
-const TestimonialsSection = () => {
-  return (
-    <section id="testimonials" className="py-24 bg-brand-navy/30 relative overflow-hidden">
-      {/* Subtle accent line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-gold/30 to-transparent" />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <motion.div
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.span 
-            className="inline-block px-4 py-2 rounded-full glass-premium text-brand-gold text-sm font-medium mb-6"
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            Client Success Stories
-          </motion.span>
-          
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 text-brand-white">
-            What Our Clients Say
-          </h2>
-          
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-            Real results from real businesses who trusted us with their growth
-          </p>
-        </motion.div>
-
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <TestimonialCard key={testimonial.id} testimonial={testimonial} index={index} />
-          ))}
-        </div>
       </div>
-    </section>
-  );
-};
+      
+      {/* Project Type Badge */}
+      {testimonial.projectType && (
+        <span className="badge text-[10px]">
+          {testimonial.projectType}
+        </span>
+      )}
+    </div>
+  </motion.div>
+);
+
+const TestimonialsSection = () => (
+  <section id="testimonials" className="py-24 bg-brand-surface relative">
+    <div className="section-divider" />
+    
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <motion.div
+        className="mb-14 text-center max-w-2xl mx-auto"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="section-label justify-center">Client Feedback</div>
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          Trusted by Technical Leaders
+        </h2>
+        <p className="text-text-secondary leading-relaxed">
+          Don't just take our word for it. Here's what CTOs, Founders, and Product Managers say about our engineering quality.
+        </p>
+      </motion.div>
+
+      {/* Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {testimonials.map((testimonial, i) => (
+          <TestimonialCard key={testimonial.id} testimonial={testimonial} index={i} />
+        ))}
+      </div>
+    </div>
+
+    <div className="section-divider mt-24" />
+  </section>
+);
 
 export default TestimonialsSection;

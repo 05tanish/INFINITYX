@@ -1,129 +1,96 @@
 import { motion } from 'framer-motion';
+import { processSteps } from '../../lib/constants';
 
-const steps = [
-  {
-    number: '01',
-    title: 'Discover',
-    description: 'We deep-dive into your brand, audience, and competition. No guesswork — just data-backed strategy.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    ),
-    color: '#3E63DD',
-    glow: 'rgba(62,99,221,0.3)',
-  },
-  {
-    number: '02',
-    title: 'Strategy',
-    description: 'We craft a bespoke roadmap — from content calendars to tech architecture — tailored to your goals.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-      </svg>
-    ),
-    color: '#8A2BE2',
-    glow: 'rgba(138,43,226,0.3)',
-  },
-  {
-    number: '03',
-    title: 'Execute',
-    description: 'Our team ships fast — high-quality content, pixel-perfect websites, and bulletproof security systems.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
-      </svg>
-    ),
-    color: '#E5C07B',
-    glow: 'rgba(229,192,123,0.3)',
-  },
-  {
-    number: '04',
-    title: 'Scale',
-    description: 'We optimize, iterate, and grow with you — continuously improving performance and expanding reach.',
-    icon: (
-      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-      </svg>
-    ),
-    color: '#3E63DD',
-    glow: 'rgba(62,99,221,0.3)',
-  },
-];
+const ProcessSection = () => (
+  <section id="process" className="py-24 bg-brand-surface relative">
+    <div className="section-divider" />
 
-const ProcessSection = () => {
-  return (
-    <section id="process" className="py-32 bg-brand-navy/20 relative overflow-hidden">
-      {/* Accent lines */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-purple/30 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-brand-blue/30 to-transparent" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Header */}
+      <motion.div
+        className="mb-16 text-center max-w-2xl mx-auto"
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="section-label justify-center">How We Work</div>
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+          From Brief to Launch
+        </h2>
+        <p className="text-text-secondary leading-relaxed">
+          A transparent, structured process so you always know what's happening and when to expect delivery.
+        </p>
+      </motion.div>
 
-      {/* Background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand-blue-glow rounded-full blur-[150px] opacity-10 pointer-events-none" />
+      {/* Steps — vertical timeline on mobile, horizontal on desktop */}
+      <div className="relative">
+        {/* Connecting line (desktop) */}
+        <div className="hidden lg:block absolute top-10 left-0 right-0 h-px bg-brand-border z-0" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
-        <motion.div className="text-center mb-20"
-          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-          <motion.span className="inline-block px-4 py-2 rounded-full glass-premium text-brand-blue text-sm font-bold uppercase tracking-widest mb-6"
-            initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-            How We Work
-          </motion.span>
-          <h2 className="text-5xl md:text-6xl font-extrabold text-brand-white mb-4">
-            Our <span className="text-gradient">Process</span>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-            From first conversation to measurable results — a proven 4-step system.
-          </p>
-        </motion.div>
-
-        {/* Steps Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((step, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 relative z-10">
+          {processSteps.map((step, index) => (
             <motion.div
-              key={step.number}
-              id={`process-step-${index + 1}`}
-              className="glass-card p-8 relative group overflow-hidden"
-              initial={{ opacity: 0, y: 40 }}
+              key={step.step}
+              className="flex flex-col items-start lg:items-center lg:text-center"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.5, delay: index * 0.12 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
             >
-              {/* Step number watermark */}
-              <div className="absolute -top-4 -right-2 text-8xl font-black text-white/[0.03] select-none pointer-events-none">
-                {step.number}
-              </div>
-
-              {/* Colored left accent border */}
-              <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-3xl" style={{ background: step.color }} />
-
-              {/* Icon */}
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6 transition-transform duration-300 group-hover:scale-110"
-                style={{ background: `${step.color}20`, border: `1px solid ${step.color}40`, color: step.color, boxShadow: `0 0 20px ${step.glow}` }}>
-                {step.icon}
-              </div>
-
-              {/* Content */}
-              <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: step.color }}>
-                Step {step.number}
-              </div>
-              <h3 className="text-2xl font-bold text-white mb-3">{step.title}</h3>
-              <p className="text-gray-400 leading-relaxed text-sm">{step.description}</p>
-
-              {/* Connector arrow (hidden on last) */}
-              {index < steps.length - 1 && (
-                <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-20">
-                  <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
-                  </svg>
+              {/* Step circle */}
+              <div className="flex items-center gap-3 lg:flex-col lg:gap-2 lg:items-center mb-4">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                  index === 0
+                    ? 'bg-brand-blue text-white'
+                    : 'bg-brand-card border border-brand-border text-text-secondary'
+                }`}>
+                  {step.step}
                 </div>
-              )}
+                {/* Mobile connector line */}
+                <div className="flex-1 h-px bg-brand-border lg:hidden" />
+              </div>
+
+              <div className="lg:px-2">
+                <div className="text-xs font-mono text-text-muted mb-1 font-medium">{step.duration}</div>
+                <h3 className="text-sm font-semibold text-white mb-2">{step.title}</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">{step.description}</p>
+              </div>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
-  );
-};
+
+      {/* Callout */}
+      <motion.div
+        className="mt-14 pro-card p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center gap-6"
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <div className="w-12 h-12 rounded-xl bg-blue-600/10 border border-blue-600/20 flex items-center justify-center flex-shrink-0">
+          <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </div>
+        <div className="flex-1">
+          <h3 className="text-base font-semibold text-white mb-1">Fixed-price or time-and-materials — your choice</h3>
+          <p className="text-sm text-text-secondary leading-relaxed">
+            We offer both engagement models. Fixed-price gives you budget certainty; T&M is ideal for evolving scope. We'll recommend the right model during your proposal call.
+          </p>
+        </div>
+        <button
+          onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+          className="btn-secondary text-sm flex-shrink-0"
+        >
+          Discuss Your Project
+        </button>
+      </motion.div>
+    </div>
+
+    <div className="section-divider mt-24" />
+  </section>
+);
 
 export default ProcessSection;

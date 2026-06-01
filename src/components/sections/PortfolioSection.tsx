@@ -1,165 +1,166 @@
-import { useState, useRef, type MouseEvent } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
+import { useState, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import Magnetic from '../ui/Magnetic';
 import { portfolioItems, type PortfolioItem } from '../../lib/constants';
 
-type FilterCategory = 'all' | 'video' | 'social-media' | 'website';
+type FilterCategory = 'all' | 'web-app' | 'mobile' | 'saas' | 'automation';
 
 const filterLabels: { value: FilterCategory; label: string }[] = [
-  { value: 'all', label: 'All Work' },
-  { value: 'video', label: 'Video' },
-  { value: 'social-media', label: 'Social Media' },
-  { value: 'website', label: 'Websites' },
+  { value: 'all', label: 'All Projects' },
+  { value: 'web-app', label: 'Web Apps' },
+  { value: 'saas', label: 'SaaS' },
+  { value: 'mobile', label: 'Mobile' },
+  { value: 'automation', label: 'Automation' },
 ];
 
-interface PortfolioItemCardProps {
-  item: PortfolioItem;
-  index: number;
-}
+const categoryLabel: Record<string, string> = {
+  'web-app': 'Web App',
+  'mobile': 'Mobile',
+  'saas': 'SaaS Platform',
+  'automation': 'Automation',
+};
 
-const PortfolioItemCard = ({ item, index }: PortfolioItemCardProps) => {
-  const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const mouseXSpring = useSpring(x, { stiffness: 300, damping: 20 });
-  const mouseYSpring = useSpring(y, { stiffness: 300, damping: 20 });
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['10deg', '-10deg']);
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-10deg', '10deg']);
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-
-  const handleMouseLeave = () => { x.set(0); y.set(0); };
-
-  const fallbackImage = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600' viewBox='0 0 800 600'%3E%3Crect fill='%231A1A1A' width='800' height='600'/%3E%3Ctext fill='%233E63DD' font-family='Outfit' font-size='24' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3E${encodeURIComponent(item.title)}%3C/text%3E%3C/svg%3E`;
-
-  const categoryColors: Record<string, string> = {
-    'video': '#3E63DD',
-    'social-media': '#8A2BE2',
-    'website': '#E5C07B',
-  };
+const PortfolioCard = ({ item, index }: { item: PortfolioItem; index: number }) => {
+  const [imgError, setImgError] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   return (
     <motion.div
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{ perspective: 1000 }}
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="group"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.35, delay: index * 0.06 }}
+      className="pro-card overflow-hidden group"
     >
-      <motion.div
-        style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-        className="relative overflow-hidden rounded-xl glass-premium aspect-[4/3] shadow-2xl transition-shadow duration-300 group-hover:shadow-[0_20px_40px_rgba(62,99,221,0.2)]"
-      >
-        <motion.div className="relative w-full h-full" style={{ transform: 'translateZ(30px)' }}>
-          {!imageLoaded && <div className="absolute inset-0 shimmer" />}
-          <img
-            src={imageError ? fallbackImage : item.thumbnail}
-            alt={item.title}
-            loading="lazy"
-            onError={() => setImageError(true)}
-            onLoad={() => setImageLoaded(true)}
-            className={`w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          />
-        </motion.div>
+      {/* Image */}
+      <div className="relative h-48 overflow-hidden bg-brand-muted">
+        {!imgLoaded && (
+          <div className="absolute inset-0 shimmer" />
+        )}
+        <img
+          src={imgError
+            ? `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect fill='%23161616' width='800' height='600'/%3E%3Ctext fill='%23555' font-family='Inter' font-size='20' x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle'%3E${encodeURIComponent(item.title)}%3C/text%3E%3C/svg%3E`
+            : item.thumbnail}
+          alt={item.title}
+          loading="lazy"
+          onError={() => setImgError(true)}
+          onLoad={() => setImgLoaded(true)}
+          className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+        />
+        <div className="absolute inset-0 bg-brand-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6"
-          style={{ transform: 'translateZ(60px)' }}
-        >
-          <span className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: categoryColors[item.category] }}>
-            {item.category.replace('-', ' ')}
+        {/* Category badge */}
+        <div className="absolute top-3 left-3">
+          <span className="badge text-xs">
+            {categoryLabel[item.category]}
           </span>
-          <h3 className="text-xl font-bold text-brand-white mb-1">{item.title}</h3>
-          <p className="text-gray-300 text-sm leading-relaxed">{item.description}</p>
-        </motion.div>
+        </div>
+      </div>
 
-        <motion.div
-          className="absolute top-3 right-3 px-3 py-1 glass-premium rounded-full"
-          style={{ transform: 'translateZ(40px)' }}
-        >
-          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: categoryColors[item.category] }}>
-            {item.category.replace('-', ' ')}
-          </span>
-        </motion.div>
-      </motion.div>
+      {/* Content */}
+      <div className="p-5">
+        <h3 className="text-base font-semibold text-white mb-1.5">{item.title}</h3>
+        <p className="text-sm text-text-secondary leading-relaxed mb-4">{item.description}</p>
+
+        {/* Result */}
+        {item.result && (
+          <div className="flex items-center gap-2 mb-4 px-3 py-2 rounded-lg bg-blue-600/6 border border-blue-600/15">
+            <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <span className="text-xs font-semibold text-blue-400">{item.result}</span>
+          </div>
+        )}
+
+        {/* Tech stack */}
+        <div className="flex flex-wrap gap-1.5">
+          {item.tech.map(t => (
+            <span key={t} className="px-2 py-0.5 text-xs rounded bg-brand-muted text-text-muted font-medium">
+              {t}
+            </span>
+          ))}
+        </div>
+      </div>
     </motion.div>
   );
 };
 
 const PortfolioSection = () => {
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('all');
+  const containerRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  const headerY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   const filtered = activeFilter === 'all'
     ? portfolioItems
     : portfolioItems.filter(item => item.category === activeFilter);
 
   return (
-    <section id="portfolio" className="py-32 bg-brand-black relative overflow-hidden">
-      <div className="absolute top-[10%] inset-x-0 mx-auto w-full max-w-4xl h-[500px] bg-brand-blue-glow rounded-full blur-[150px] opacity-10 pointer-events-none" />
+    <section ref={containerRef} id="portfolio" className="py-24 bg-brand-black relative">
+      <div className="section-divider" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
-          <motion.span className="inline-block px-4 py-2 rounded-full glass-premium text-brand-purple text-sm font-bold uppercase tracking-widest mb-6"
-            initial={{ opacity: 0, scale: 0.8 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
-            Our Portfolio
-          </motion.span>
-          <h2 className="text-5xl md:text-6xl font-extrabold mb-6 text-brand-white">
-            Featured <span className="text-gradient">Projects</span>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-10">
-            Explore our curated selection of high-velocity transformations and digital masterpieces.
-          </p>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          className="mb-12"
+          style={{ y: headerY }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="section-label">Work</div>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-lg">
+              Projects We've Shipped
+            </h2>
 
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {filterLabels.map((filter) => (
-              <motion.button
-                key={filter.value}
-                id={`portfolio-filter-${filter.value}`}
-                onClick={() => setActiveFilter(filter.value)}
-                className={`px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
-                  activeFilter === filter.value
-                    ? 'text-white shadow-[0_0_15px_rgba(62,99,221,0.4)]'
-                    : 'glass-premium text-gray-400 hover:text-white'
-                }`}
-                style={activeFilter === filter.value ? { background: 'linear-gradient(135deg, #3E63DD, #8A2BE2)' } : {}}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                {filter.label}
-              </motion.button>
-            ))}
+            {/* Filter tabs */}
+            <div className="flex flex-wrap gap-2">
+              {filterLabels.map(f => (
+                <Magnetic key={f.value}>
+                  <button
+                    id={`portfolio-filter-${f.value}`}
+                    onClick={() => setActiveFilter(f.value)}
+                    className={`px-4 py-1.5 text-sm font-medium rounded-lg border transition-all ${
+                      activeFilter === f.value
+                        ? 'bg-brand-blue text-white border-brand-blue'
+                        : 'bg-transparent text-text-secondary border-brand-border hover:border-brand-muted hover:text-white'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                </Magnetic>
+              ))}
+            </div>
           </div>
         </motion.div>
 
-        {/* Portfolio Grid */}
-        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Grid */}
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <AnimatePresence mode="popLayout">
-            {filtered.map((item, index) => (
-              <PortfolioItemCard key={item.id} item={item} index={index} />
+            {filtered.map((item, i) => (
+              <PortfolioCard key={item.id} item={item} index={i} />
             ))}
           </AnimatePresence>
         </motion.div>
 
         {filtered.length === 0 && (
-          <motion.p className="text-center text-gray-500 py-20 text-lg"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            No projects in this category yet. Check back soon!
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-text-muted py-20"
+          >
+            No projects in this category yet.
           </motion.p>
         )}
       </div>
+
+      <div className="section-divider mt-24" />
     </section>
   );
 };
