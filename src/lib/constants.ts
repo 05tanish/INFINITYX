@@ -315,6 +315,9 @@ export const techStack = [
   'Tailwind CSS', 'Figma', 'OpenAI API', 'GitHub Actions', 'Vercel',
 ];
 
+export const AGENCY_NAME = 'NorthernStar';
+export const CONTACT_EMAIL = 'hello@northernstar.com';
+
 export interface ProcessStep {
   step: number;
   title: string;

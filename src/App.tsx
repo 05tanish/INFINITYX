@@ -1,88 +1,49 @@
-import { useEffect } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Lenis from 'lenis';
-
-import Layout from './components/layout/Layout';
-import Navigation from './components/layout/Navigation';
-import Footer from './components/layout/Footer';
-import HeroSection from './components/sections/HeroSection';
-import ServicesSection from './components/sections/ServicesSection';
-import StatsSection from './components/sections/StatsSection';
-import PricingSection from './components/sections/PricingSection';
-import PortfolioSection from './components/sections/PortfolioSection';
-import TestimonialsSection from './components/sections/TestimonialsSection';
-import WhyChooseSection from './components/sections/WhyChooseSection';
-import ProcessSection from './components/sections/ProcessSection';
-import FinalCTASection from './components/sections/FinalCTASection';
-import ContactSection from './components/sections/ContactSection';
-import CustomCursor from './components/ui/CustomCursor';
-
-// Register GSAP plugins globally
-gsap.registerPlugin(ScrollTrigger);
-
-const sections = [
-  { id: 'hero', label: 'Home' },
-  { id: 'services', label: 'Services' },
-  { id: 'portfolio', label: 'Portfolio' },
-  { id: 'pricing', label: 'Pricing' },
-  { id: 'testimonials', label: 'Testimonials' },
-  { id: 'contact', label: 'Contact' },
-];
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/admin/ProtectedRoute';
+import AdminLayout from './pages/admin/AdminLayout';
+import Login from './pages/admin/Login';
+import ResetPassword from './pages/admin/ResetPassword';
+import DashboardOverview from './pages/admin/DashboardOverview';
+import UserManagement from './pages/admin/UserManagement';
+import ReviewsManager from './pages/admin/ReviewsManager';
+import ComplaintsManager from './pages/admin/ComplaintsManager';
+import QuotesManager from './pages/admin/QuotesManager';
+import PortfolioManager from './pages/admin/PortfolioManager';
+import ServicesManager from './pages/admin/ServicesManager';
+import StatsManager from './pages/admin/StatsManager';
+import PricingManager from './pages/admin/PricingManager';
 
 function App() {
-  useEffect(() => {
-    // React 19 safe Vanilla Lenis execution
-    const lenis = new Lenis({
-      lerp: 0.08,
-      smoothWheel: true,
-    });
-
-    lenis.on('scroll', ScrollTrigger.update);
-
-    const updateLenis = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(updateLenis);
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      lenis.destroy();
-      gsap.ticker.remove(updateLenis);
-    };
-  }, []);
-
   return (
-    <>
-      <CustomCursor />
-      
-      {/* Global SVG Filter for Liquid Gooey effects */}
-      <svg className="hidden h-0 w-0 absolute pointer-events-none">
-        <defs>
-          <filter id="goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9" result="goo" />
-            <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
-          </filter>
-        </defs>
-      </svg>
-
-      <Layout>
-        <Navigation sections={sections} logo="Infinityx" />
-        <HeroSection />
-        <ServicesSection />
-        <StatsSection />
-        <PortfolioSection />
-        <WhyChooseSection />
-        <ProcessSection />
-        <PricingSection />
-        <TestimonialsSection />
-        <FinalCTASection />
-        <ContactSection />
-        <Footer logo="Infinityx" />
-      </Layout>
-    </>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public Website */}
+          <Route path="/" element={<LandingPage />} />
+          
+          {/* Admin Login & Reset */}
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
+          
+          {/* Protected Admin Dashboard */}
+          <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin', 'developer']} />}>
+            <Route element={<AdminLayout />}>
+              <Route index element={<DashboardOverview />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="reviews" element={<ReviewsManager />} />
+              <Route path="complaints" element={<ComplaintsManager />} />
+              <Route path="quotes" element={<QuotesManager />} />
+              <Route path="portfolio" element={<PortfolioManager />} />
+              <Route path="services" element={<ServicesManager />} />
+              <Route path="stats" element={<StatsManager />} />
+              <Route path="pricing" element={<PricingManager />} />
+            </Route>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

@@ -1,9 +1,17 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import Magnetic from '../ui/Magnetic';
-import { services } from '../../lib/constants';
+import { supabase } from '../../lib/supabase';
 
-const iconMap: Record<string, JSX.Element> = {
+interface Service {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  features: string[];
+  tags: string[];
+}
+
+const iconMap: Record<string, React.ReactNode> = {
   Code2: (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -42,6 +50,7 @@ const iconMap: Record<string, JSX.Element> = {
 };
 
 const ServicesSection = () => {
+  const [services, setServices] = useState<Service[]>([]);
   const containerRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -49,15 +58,29 @@ const ServicesSection = () => {
   });
   const headerY = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
+  useEffect(() => {
+    const fetchServices = async () => {
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .order('display_order', { ascending: true });
+      
+      if (!error && data) {
+        setServices(data);
+      }
+    };
+    fetchServices();
+  }, []);
+
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section ref={containerRef} id="services" className="py-24 bg-brand-black relative">
+    <section ref={containerRef} id="services" className="py-24 bg-ns-black relative">
       <div className="section-divider" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">
         {/* Header */}
         <motion.div
           className="mb-16"
@@ -67,88 +90,52 @@ const ServicesSection = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <div className="section-label">Services</div>
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-lg">
-              Full-Stack IT Services for Modern Businesses
+          <div className="flex items-center gap-4 mb-6">
+            <span className="text-[10px] text-ns-slate uppercase tracking-[0.2em] font-semibold">What We Do</span>
+            <div className="h-px flex-1 bg-ns-graphite max-w-[200px]" />
+          </div>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <h2 className="display-heading text-4xl sm:text-5xl md:text-[3.5rem] max-w-2xl">
+              Strategy-led. <br />Design-driven. <br />Growth-focused.
             </h2>
-            <p className="text-text-secondary max-w-sm leading-relaxed">
-              From product ideation to production deployment — we cover every technical layer your business needs.
+            <p className="text-ns-slate max-w-sm leading-relaxed text-base md:text-lg">
+              We combine clarity of strategy with world-class design and smart execution to help brands scale.
             </p>
           </div>
         </motion.div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Services Grid (4 cols on desktop matching reference) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {services.map((service, index) => (
             <motion.div
               key={service.id}
-              className="pro-card p-6 group cursor-pointer"
+              className="pro-card p-6 md:p-8 group cursor-pointer flex flex-col h-full bg-ns-navy"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.07 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
               onClick={scrollToContact}
             >
-              {/* Icon + Title row */}
-              <div className="flex items-start gap-4 mb-4">
-                <div className="w-10 h-10 rounded-lg bg-blue-600/10 border border-blue-600/20 flex items-center justify-center text-blue-400 flex-shrink-0 group-hover:bg-blue-600/20 transition-colors">
+              {/* Icon */}
+              <div className="mb-6">
+                <div className="w-12 h-12 rounded-full border border-ns-gold text-ns-gold flex items-center justify-center group-hover:bg-ns-gold/10 transition-colors">
                   {iconMap[service.icon]}
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1">{service.name}</h3>
-                  <p className="text-sm text-text-secondary leading-relaxed">{service.description}</p>
-                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1">
+                <h3 className="text-xl font-serif text-white mb-3">{service.name}</h3>
+                <p className="text-sm text-ns-slate leading-relaxed mb-6">{service.description}</p>
               </div>
 
-              {/* Feature list */}
-              <ul className="space-y-2 mb-5">
-                {service.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-text-secondary">
-                    <svg className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Tech tags */}
-              <div className="flex flex-wrap gap-1.5 pt-4 border-t border-brand-border">
-                {service.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="px-2 py-0.5 text-xs font-medium rounded bg-brand-muted text-text-secondary"
-                  >
-                    {tag}
-                  </span>
-                ))}
+              {/* Link */}
+              <div className="flex items-center text-sm font-semibold text-ns-gold group-hover:text-ns-gold-lt transition-colors mt-auto">
+                Learn more &rarr;
               </div>
             </motion.div>
           ))}
         </div>
-
-        {/* Bottom CTA strip */}
-        <motion.div
-          className="mt-12 pro-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-        >
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-1">Not sure what you need?</h3>
-            <p className="text-text-secondary text-sm">Book a free 30-min discovery call and we'll scope the right solution for you.</p>
-          </div>
-          <Magnetic>
-            <button
-              onClick={scrollToContact}
-              className="btn-primary whitespace-nowrap flex-shrink-0"
-            >
-              Book Free Consultation →
-            </button>
-          </Magnetic>
-        </motion.div>
       </div>
 
       <div className="section-divider mt-24" />

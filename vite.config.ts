@@ -4,6 +4,12 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      // Fix for Recharts require_isUnsafeProperty issue
+      'victory-vendor/lib-vendor/d3-interpolate': 'victory-vendor/lib-vendor/d3-interpolate/src/index.js',
+    }
+  },
   build: {
     // Production optimizations
     minify: 'esbuild',
@@ -32,6 +38,14 @@ export default defineConfig({
   },
   // Performance optimizations
   optimizeDeps: {
-    include: ['react', 'react-dom', 'framer-motion', 'react-hook-form', 'zod'],
+    include: [
+      'react', 
+      'react-dom', 
+      'framer-motion', 
+      'react-hook-form', 
+      'zod', 
+      'recharts',
+      'lucide-react'
+    ],
   },
 })

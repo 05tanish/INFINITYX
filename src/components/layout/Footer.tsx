@@ -1,130 +1,82 @@
-export interface FooterProps {
-  logo?: string;
-}
+import { AGENCY_NAME, CONTACT_EMAIL } from '../../lib/constants';
+import StarLogo from '../ui/StarLogo';
 
-const Footer = ({ logo = 'Infinityx' }: FooterProps) => {
+const Footer = () => {
   const currentYear = new Date().getFullYear();
 
-  const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const navigationLinks = [
-    { id: 'hero', label: 'Home' },
-    { id: 'services', label: 'Services' },
-    { id: 'portfolio', label: 'Work' },
-    { id: 'process', label: 'Process' },
-    { id: 'pricing', label: 'Pricing' },
-  ];
-
-  const services = [
-    'Web Application Development',
-    'SaaS Platforms',
-    'Mobile Apps (iOS/Android)',
-    'Cybersecurity Audits',
-    'Automation & AI',
-  ];
-
-  const socialLinks = [
-    { name: 'Twitter', url: '#', icon: 'M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z' },
-    { name: 'LinkedIn', url: '#', icon: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z M4 6a2 2 0 100-4 2 2 0 000 4z' },
-    { name: 'GitHub', url: '#', icon: 'M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22' },
-  ];
-
   return (
-    <footer className="bg-brand-surface border-t border-brand-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-12">
-          {/* Logo and Description */}
-          <div className="col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 bg-brand-blue rounded-md flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-[10px]">IX</span>
-              </div>
-              <h3 className="text-xl font-bold text-white tracking-tight">
-                {logo}
-              </h3>
-            </div>
-            <p className="text-text-secondary text-sm leading-relaxed mb-6">
-              A premium IT agency engineering scalable software solutions for forward-thinking businesses.
+    <footer className="bg-ns-black border-t border-ns-graphite pt-16 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          
+          {/* Brand Col */}
+          <div className="lg:col-span-1">
+            <a href="/" className="flex items-center gap-3 mb-6 group">
+              <StarLogo size={24} className="transition-transform duration-500 group-hover:rotate-180" />
+              <span className="font-bold text-lg font-serif uppercase tracking-widest text-white">{AGENCY_NAME}</span>
+            </a>
+            <p className="text-sm text-ns-slate leading-relaxed mb-6">
+              Strategy-led, design-driven, growth-focused digital products for ambitious brands.
             </p>
-            
-            {/* Socials */}
-            <div className="flex space-x-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.url}
-                  className="w-9 h-9 rounded bg-brand-card border border-brand-border flex items-center justify-center text-text-secondary hover:text-white hover:border-brand-muted transition-all"
-                  aria-label={social.name}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <path d={social.icon} />
-                  </svg>
-                </a>
-              ))}
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded border border-ns-graphite flex items-center justify-center text-ns-slate hover:text-ns-gold hover:border-ns-gold/50 transition-colors bg-ns-navy">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+              </a>
+              <a href="#" className="w-10 h-10 rounded border border-ns-graphite flex items-center justify-center text-ns-slate hover:text-ns-gold hover:border-ns-gold/50 transition-colors bg-ns-navy">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              </a>
+              <a href="#" className="w-10 h-10 rounded border border-ns-graphite flex items-center justify-center text-ns-slate hover:text-ns-gold hover:border-ns-gold/50 transition-colors bg-ns-navy">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </a>
             </div>
           </div>
 
           {/* Links */}
-          <div className="col-span-1">
-            <h4 className="text-white font-bold mb-5 text-sm">Company</h4>
+          <div>
+            <h4 className="text-white font-bold text-sm mb-6 uppercase tracking-widest">Company</h4>
             <ul className="space-y-3">
-              {navigationLinks.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => scrollToSection(link.id)}
-                    className="text-text-secondary hover:text-white transition-colors text-sm"
-                  >
-                    {link.label}
-                  </button>
-                </li>
-              ))}
+              <li><a href="#services" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Work</a></li>
+              <li><a href="#why-choose" className="text-sm text-ns-slate hover:text-ns-white transition-colors">About Us</a></li>
+              <li><a href="#process" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Process</a></li>
+              <li><a href="#contact" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Contact</a></li>
             </ul>
           </div>
 
-          {/* Services */}
-          <div className="col-span-1">
-            <h4 className="text-white font-bold mb-5 text-sm">Services</h4>
+          <div>
+            <h4 className="text-white font-bold text-sm mb-6 uppercase tracking-widest">Legal</h4>
             <ul className="space-y-3">
-              {services.map((service) => (
-                <li key={service} className="text-text-secondary text-sm">
-                  {service}
-                </li>
-              ))}
+              <li><a href="#" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="text-sm text-ns-slate hover:text-ns-white transition-colors">Cookie Policy</a></li>
+              <li><a href="/admin/login" className="text-sm text-ns-slate hover:text-ns-gold transition-colors">Client Portal</a></li>
             </ul>
           </div>
 
           {/* Contact */}
-          <div className="col-span-1">
-            <h4 className="text-white font-bold mb-5 text-sm">Contact Us</h4>
-            <div className="space-y-4">
-              <a href="mailto:hello@infinityx.com" className="flex items-center text-text-secondary hover:text-white transition-colors text-sm">
-                <svg className="w-4 h-4 mr-3 text-brand-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                hello@infinityx.com
-              </a>
-              <div className="flex items-center text-text-secondary text-sm">
-                <svg className="w-4 h-4 mr-3 text-brand-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                Mon - Fri, 9am - 6pm
-              </div>
-            </div>
+          <div>
+            <h4 className="text-white font-bold text-sm mb-6 uppercase tracking-widest">Get in Touch</h4>
+            <ul className="space-y-3">
+              <li className="text-sm text-ns-slate">
+                <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-ns-gold transition-colors">{CONTACT_EMAIL}</a>
+              </li>
+              <li className="text-sm text-ns-slate">
+                +91 98765 43210
+              </li>
+              <li className="text-sm text-ns-slate mt-4 pt-4 border-t border-ns-graphite">
+                India HQ<br/>
+                Serving clients globally
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="pt-8 border-t border-brand-border">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-text-muted text-sm">
-              © {currentYear} Infinityx. All rights reserved.
-            </p>
-            <div className="flex gap-6 text-sm">
-              <a href="#" className="text-text-muted hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="text-text-muted hover:text-white transition-colors">Terms of Service</a>
-            </div>
+        {/* Bottom */}
+        <div className="border-t border-ns-graphite py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-ns-slate">
+            &copy; {currentYear} {AGENCY_NAME}. All rights reserved.
+          </p>
+          <div className="text-[10px] uppercase tracking-[0.3em] font-bold text-ns-gold">
+            Dark. Intelligent. Precise. Premium.
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import StarLogo from '../ui/StarLogo';
 
 export interface NavSection {
   id: string;
@@ -11,7 +12,7 @@ export interface NavigationProps {
   logo?: string;
 }
 
-const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
+const Navigation = ({ sections, logo = 'Northern Star' }: NavigationProps) => {
   const [activeSection, setActiveSection] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -96,32 +97,24 @@ const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
       />
 
       <motion.nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-200 ${
-          isScrolled ? 'nav-scrolled' : 'bg-transparent'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled ? 'nav-scrolled py-3' : 'bg-transparent py-5'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-[68px]">
+          <div className="flex items-center justify-between">
 
             {/* Logo */}
-            <button
-              onClick={() => scrollToSection('hero')}
-              className="flex items-center gap-2 group"
-              aria-label="Infinityx home"
-            >
-              <div className="w-7 h-7 bg-brand-blue rounded-md flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xs">IX</span>
-              </div>
-              <span className="text-lg font-bold text-white tracking-tight group-hover:text-brand-off transition-colors">
-                {logo}
-              </span>
-            </button>
+            <a href="/" className="flex items-center gap-3 group">
+              <StarLogo size={28} className="transition-transform duration-500 group-hover:rotate-180" />
+              <span className="font-semibold text-xl tracking-wide text-white font-serif uppercase tracking-widest">{logo}</span>
+            </a>
 
             {/* Desktop Nav Links */}
-            <div className="hidden md:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-2">
               {sections.map(section => (
                 <button
                   key={section.id}
@@ -132,8 +125,9 @@ const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
                   {section.label}
                   {activeSection === section.id && (
                     <motion.div
-                      className="absolute bottom-0 left-3 right-3 h-px bg-brand-blue"
+                      className="absolute bottom-1 left-4 right-4 h-px bg-ns-gold"
                       layoutId="navUnderline"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                     />
                   )}
                 </button>
@@ -141,37 +135,31 @@ const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
             </div>
 
             {/* Desktop CTA */}
-            <div className="hidden md:flex items-center gap-3">
-              <button
-                onClick={() => scrollToSection('contact')}
-                className="nav-link text-text-secondary"
-              >
-                Contact
-              </button>
+            <div className="hidden md:flex items-center gap-4">
               <motion.button
                 id="nav-start-project-btn"
                 onClick={() => scrollToSection('contact')}
-                className="btn-primary text-sm px-5 py-2.5"
+                className="btn-outline-gold text-xs px-6 py-2.5"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
               >
-                Start a Project →
+                Let's Talk →
               </motion.button>
             </div>
 
             {/* Mobile Hamburger */}
             <button
               id="mobile-menu-btn"
-              className="md:hidden p-2 rounded-lg text-text-secondary hover:text-white hover:bg-brand-card transition-all"
+              className="md:hidden p-2 rounded-lg text-ns-slate hover:text-ns-gold hover:bg-ns-muted transition-all"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMobileMenuOpen}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
                 )}
               </svg>
             </button>
@@ -184,7 +172,7 @@ const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
         {isMobileMenuOpen && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/60 z-40 md:hidden"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-40 md:hidden"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -192,46 +180,49 @@ const Navigation = ({ sections, logo = 'Infinityx' }: NavigationProps) => {
             />
             <motion.div
               ref={mobileMenuRef}
-              className="fixed top-0 right-0 bottom-0 w-72 bg-brand-surface border-l border-brand-border z-50 md:hidden"
+              className="fixed top-0 right-0 bottom-0 w-72 bg-ns-navy border-l border-ns-graphite z-50 md:hidden shadow-dialog"
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 26, stiffness: 220 }}
             >
-              <div className="flex items-center justify-between p-5 border-b border-brand-border">
-                <span className="font-bold text-white">{logo}</span>
+              <div className="flex items-center justify-between p-5 border-b border-ns-graphite">
+                <a href="/" className="flex items-center gap-2">
+                  <StarLogo size={20} />
+                  <span className="font-bold text-white font-serif uppercase tracking-wider text-sm">{logo}</span>
+                </a>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1.5 rounded-lg hover:bg-brand-muted transition-colors"
+                  className="p-1.5 rounded-lg text-ns-slate hover:text-ns-gold hover:bg-ns-muted transition-colors"
                   aria-label="Close menu"
                 >
-                  <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
 
-              <nav className="flex flex-col p-4 gap-1">
+              <nav className="flex flex-col p-4 gap-2 mt-4">
                 {sections.map(section => (
                   <button
                     key={section.id}
                     onClick={() => scrollToSection(section.id)}
                     className={`text-left text-sm font-medium py-3 px-4 rounded-lg transition-all ${
                       activeSection === section.id
-                        ? 'text-white bg-brand-muted'
-                        : 'text-text-secondary hover:text-white hover:bg-brand-card'
+                        ? 'text-ns-gold bg-ns-gold/10 border border-ns-gold/20'
+                        : 'text-ns-slate hover:text-white hover:bg-ns-muted'
                     }`}
                     aria-current={activeSection === section.id ? 'page' : undefined}
                   >
                     {section.label}
                   </button>
                 ))}
-                <div className="pt-4 mt-2 border-t border-brand-border">
+                <div className="pt-6 mt-4 border-t border-ns-graphite">
                   <button
                     onClick={() => scrollToSection('contact')}
                     className="btn-primary w-full justify-center"
                   >
-                    Start a Project →
+                    Let's Talk →
                   </button>
                 </div>
               </nav>

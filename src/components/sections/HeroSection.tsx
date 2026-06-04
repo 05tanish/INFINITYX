@@ -6,19 +6,11 @@ export interface HeroSectionProps {
   onGetStarted?: () => void;
 }
 
-// A simple stagger animation for the words
-const headline = "WE BUILD SOFTWARE THAT SCALES.";
-const words = headline.split(" ");
-
 const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
   const containerRef = useRef<HTMLElement>(null);
 
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToWork = () => {
-    document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleGetStarted = () => onGetStarted ? onGetStarted() : scrollToContact();
@@ -27,142 +19,100 @@ const HeroSection = ({ onGetStarted }: HeroSectionProps) => {
     <section
       ref={containerRef}
       id="hero"
-      className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-brand-black"
+      className="relative min-h-[100vh] w-full flex flex-col items-center justify-center overflow-hidden bg-ns-black"
     >
-      {/* Background Effects */}
-      <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
-      <div
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[500px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at top, rgba(37,99,235,0.12) 0%, transparent 60%)' }}
+      {/* Background Image with Aurora & Mountains */}
+      <div 
+        className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: "url('/hero-aurora.jpg')",
+        }}
       />
-      <div className="absolute top-0 left-0 right-0 h-px bg-brand-border" />
+      {/* Overlay to ensure text readability */}
+      <div className="absolute inset-0 z-0 bg-ns-black/40 bg-gradient-to-t from-ns-black via-ns-black/20 to-transparent" />
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-ns-black/60 to-transparent" />
 
       {/* Main Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center flex-grow pt-24 pb-12">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-start justify-center flex-grow pt-32 pb-24 md:pt-40 md:pb-32">
         
-
-
-        {/* Masked Headline Reveal */}
-        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-8 max-w-5xl">
-          {words.map((word, idx) => (
-            <div key={idx} className="overflow-hidden py-2">
-              <motion.span
-                className="inline-block text-6xl sm:text-7xl md:text-8xl lg:text-[8rem] font-black tracking-tighter text-white leading-[0.9]"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                transition={{
-                  duration: 0.8,
-                  ease: [0.16, 1, 0.3, 1],
-                  delay: 0.1 + idx * 0.05
-                }}
-              >
-                {word === "SOFTWARE" ? <span className="text-brand-blue">{word}</span> : word}
-              </motion.span>
-            </div>
-          ))}
-        </div>
-
-        <motion.p
-          className="text-lg md:text-xl text-text-secondary mb-12 max-w-2xl text-center leading-relaxed"
+        {/* Micro-label */}
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.6 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mb-8"
         >
-          We turn complex requirements into clean, production-ready systems. Specializing in SaaS, mobile apps, and business automation.
+          <span className="text-[0.65rem] md:text-xs font-bold text-ns-gold uppercase tracking-[0.3em] font-sans">
+            Digital Growth. Purposeful Design.
+          </span>
+        </motion.div>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-semibold text-white leading-[1.05] max-w-4xl tracking-tight font-serif mb-6"
+        >
+          We help ambitious brands reach <br className="hidden md:block" />
+          <span className="text-ns-gold italic pr-4">what's next.</span>
+        </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          className="text-base md:text-lg text-ns-slate mb-12 max-w-xl leading-relaxed"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.6 }}
+        >
+          Northern Star is a digital agency crafting strategy, design and experiences that drive measurable growth.
         </motion.p>
 
+        {/* CTA */}
         <motion.div
-          className="flex flex-col sm:flex-row items-center gap-4"
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
+          transition={{ duration: 1, delay: 0.8 }}
         >
           <Magnetic>
-            <motion.button
-              id="hero-start-project-btn"
+            <button
               onClick={handleGetStarted}
-              className="btn-primary text-base px-8 py-4"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
+              className="btn-primary"
             >
-              Start a Project →
-            </motion.button>
-          </Magnetic>
-          <Magnetic>
-            <motion.button
-              id="hero-view-work-btn"
-              onClick={scrollToWork}
-              className="btn-secondary text-base px-8 py-4"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.97 }}
-            >
-              View Our Work
-            </motion.button>
+              Let's Build Something Great &rarr;
+            </button>
           </Magnetic>
         </motion.div>
       </div>
 
-      {/* Bottom Anchored Strip */}
+      {/* Bottom Client Logo Strip */}
       <motion.div 
-        className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        className="relative z-10 w-full bg-ns-black/80 backdrop-blur-md border-t border-ns-graphite py-6"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 1 }}
       >
-        {/* Left: Stats */}
-        <div className="flex items-center gap-8">
-          {[
-            { value: '50+', label: 'Projects' },
-            { value: '100%', label: 'Retention' },
-          ].map(stat => (
-            <div key={stat.label} className="flex flex-col">
-              <span className="text-xl font-bold text-white">{stat.value}</span>
-              <span className="text-[10px] text-text-muted font-medium uppercase tracking-widest mt-1">{stat.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Center: Scroll Indicator */}
-        <div className="hidden md:flex flex-col items-center gap-3">
-          <span className="text-[9px] text-text-muted uppercase tracking-widest font-semibold">Scroll</span>
-          <div className="w-px h-12 bg-brand-border relative overflow-hidden">
-            <motion.div 
-              className="absolute top-0 left-0 w-full h-full bg-brand-blue"
-              initial={{ y: "-100%" }}
-              animate={{ y: "100%" }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-[0.65rem] text-ns-slate font-bold uppercase tracking-[0.2em] mb-4">
+            Trusted by growing brands
           </div>
-        </div>
-
-        {/* Right: Trust */}
-        <div className="flex items-center gap-3">
-          <div className="flex -space-x-2">
-            {['RK','PS','AP'].map((init, i) => (
-              <div
-                key={i}
-                className="w-8 h-8 rounded-full border-2 border-brand-black flex items-center justify-center text-[10px] font-bold text-white"
-                style={{ background: i === 0 ? '#2563EB' : i === 1 ? '#374151' : '#1F2937' }}
-              >
-                {init}
-              </div>
-            ))}
-          </div>
-          <div>
-            <div className="flex items-center gap-1">
-              {[1,2,3,4,5].map(s => (
-                <svg key={s} className="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              ))}
+          <div className="flex flex-wrap items-center justify-between gap-8 opacity-70">
+            {/* Wordmarks based on the reference */}
+            <div className="text-lg md:text-xl font-serif tracking-widest text-white">verve</div>
+            <div className="text-lg md:text-xl font-sans font-light tracking-[0.3em] text-white">LUMEN</div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+              <span className="text-lg md:text-xl font-sans font-medium tracking-wide text-white">Peakline</span>
             </div>
-            <p className="text-[10px] text-text-muted mt-1 uppercase tracking-wider">Trusted by 50+ founders</p>
+            <div className="text-lg md:text-xl font-serif font-bold italic tracking-wide text-white">native</div>
+            <div className="text-lg md:text-xl font-sans uppercase tracking-[0.2em] text-white">WESTHILL</div>
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h6v6H4V4zm10 0h6v6h-6V4zM4 14h6v6H4v-6zm10 0h6v6h-6v-6z"/></svg>
+              <span className="text-lg md:text-xl font-sans font-semibold tracking-widest text-white">FORMA</span>
+            </div>
           </div>
         </div>
       </motion.div>
-
-      {/* Bottom border */}
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-brand-border" />
     </section>
   );
 };

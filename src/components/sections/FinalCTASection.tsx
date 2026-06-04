@@ -1,63 +1,81 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import StarLogo from '../ui/StarLogo';
+import Magnetic from '../ui/Magnetic';
 
 const FinalCTASection = () => {
-  const scrollToContact = () => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const containerRef = useRef<HTMLElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
 
   return (
-    <section className="py-32 bg-brand-black relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section 
+      ref={containerRef}
+      className="py-32 relative overflow-hidden bg-gradient-to-b from-ns-black to-ns-navy border-t border-ns-graphite"
+    >
+      {/* Dynamic Background Elements */}
+      <motion.div 
+        style={{ y }}
+        className="absolute inset-0 z-0 flex items-center justify-center opacity-10 pointer-events-none"
+      >
+        <StarLogo size={800} animated={true} />
+      </motion.div>
+      
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-ns-teal/5 rounded-full blur-3xl pointer-events-none aurora-pulse" />
+
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center flex flex-col items-center">
+        
         <motion.div
-          className="pro-card p-10 md:p-16 text-center border-blue-600/30 bg-blue-600/5 relative overflow-hidden"
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <div className="w-16 h-16 rounded-full bg-ns-gold/10 border border-ns-gold/30 flex items-center justify-center mx-auto shadow-gold">
+            <StarLogo size={24} />
+          </div>
+        </motion.div>
+
+        <motion.h2 
+          className="display-heading text-5xl md:text-7xl mb-8 leading-tight"
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
         >
-          {/* subtle grid background in CTA */}
-          <div className="absolute inset-0 tech-grid opacity-30 pointer-events-none" />
+          Ready to build <br/> <span className="italic text-ns-gold">what's next?</span>
+        </motion.h2>
 
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 mb-6">
-              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-sm font-bold text-blue-400 tracking-widest uppercase">
-                Accepting New Projects
-              </span>
-            </div>
+        <motion.p 
+          className="text-lg text-ns-slate mb-12 max-w-xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Partner with Northern Star to transform your ideas into scalable, high-performance digital products.
+        </motion.p>
 
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold mb-6 text-white leading-tight">
-              Ready to Ship <br/> Your Next Big Idea?
-            </h2>
-
-            <p className="text-lg md:text-xl text-text-secondary mb-10 max-w-2xl mx-auto leading-relaxed">
-              Partner with an engineering team that understands business goals. We build scalable software that drives real revenue.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={scrollToContact}
-                className="btn-primary text-base px-10 py-4 shadow-lg shadow-blue-600/20 w-full sm:w-auto"
-              >
-                Schedule Discovery Call →
-              </button>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-center gap-6 mt-12 pt-8 border-t border-brand-border text-sm text-text-muted">
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>Free 30-min Consultation</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>No Commitment Required</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                <span>NDA Protected</span>
-              </div>
-            </div>
-          </div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <Magnetic>
+            <button
+              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              className="btn-primary"
+            >
+              Start Your Project &rarr;
+            </button>
+          </Magnetic>
         </motion.div>
       </div>
     </section>

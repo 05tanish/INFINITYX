@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
+import { supabase } from '../../lib/supabase';
 
 const projectTypes = [
   { value: 'web-app', label: 'Web Application' },
@@ -26,13 +27,25 @@ const ContactForm = () => {
   const onSubmit = async (data: any) => {
     setFormState('submitting');
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Project Inquiry:', data);
+      const { error } = await supabase
+        .from('quotes')
+        .insert([{
+          client_name: data.name,
+          client_email: data.email,
+          client_phone: data.phone,
+          service: data.projectType,
+          amount: data.budget,
+          description: data.requirements,
+          status: 'pending'
+        }]);
+
+      if (error) throw error;
+
       setFormState('success');
       reset();
       setTimeout(() => setFormState('idle'), 5000);
     } catch (error) {
+      console.error('Error submitting quote:', error);
       setFormState('error');
     }
   };
@@ -43,7 +56,7 @@ const ContactForm = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="pro-card p-8 md:p-10 max-w-3xl mx-auto"
+      className="pro-card bg-ns-navy p-8 md:p-10 w-full"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         
@@ -56,7 +69,7 @@ const ContactForm = () => {
               className="form-input" 
               placeholder="Jane Doe" 
             />
-            {errors.name && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+            {errors.name && <span className="text-xs text-ns-error mt-1 block">Required</span>}
           </div>
           <div>
             <label className="form-label">Work Email</label>
@@ -66,8 +79,26 @@ const ContactForm = () => {
               className="form-input" 
               placeholder="jane@company.com" 
             />
-            {errors.email && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+            {errors.email && <span className="text-xs text-ns-error mt-1 block">Required</span>}
           </div>
+        </div>
+
+        {/* Phone Row */}
+        <div>
+          <label className="form-label">Phone Number</label>
+          <input 
+            type="tel" 
+            {...register('phone', { 
+              required: 'Phone number is required',
+              pattern: {
+                value: /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/,
+                message: 'Please enter a valid phone number'
+              }
+            })} 
+            className="form-input" 
+            placeholder="+91 98765 43210" 
+          />
+          {errors.phone && <span className="text-xs text-ns-error mt-1 block">{errors.phone.message as string}</span>}
         </div>
 
         {/* Project Details Row */}
@@ -76,27 +107,27 @@ const ContactForm = () => {
             <label className="form-label">Project Type</label>
             <select 
               {...register('projectType', { required: true })} 
-              className="form-input appearance-none bg-brand-surface"
+              className="form-input appearance-none bg-ns-black"
             >
               <option value="" disabled selected>Select project type...</option>
               {projectTypes.map(pt => (
                 <option key={pt.value} value={pt.value}>{pt.label}</option>
               ))}
             </select>
-            {errors.projectType && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+            {errors.projectType && <span className="text-xs text-ns-error mt-1 block">Required</span>}
           </div>
           <div>
             <label className="form-label">Estimated Budget (INR)</label>
             <select 
               {...register('budget', { required: true })} 
-              className="form-input appearance-none bg-brand-surface"
+              className="form-input appearance-none bg-ns-black"
             >
               <option value="" disabled selected>Select budget range...</option>
               {budgetOptions.map(b => (
                 <option key={b.value} value={b.value}>{b.label}</option>
               ))}
             </select>
-            {errors.budget && <span className="text-xs text-red-500 mt-1 block">Required</span>}
+            {errors.budget && <span className="text-xs text-ns-error mt-1 block">Required</span>}
           </div>
         </div>
 
@@ -108,34 +139,34 @@ const ContactForm = () => {
             className="form-input min-h-[120px] resize-y" 
             placeholder="Tell us about the problem you're trying to solve, target audience, and key features..." 
           />
-          {errors.requirements && <span className="text-xs text-red-500 mt-1 block">Please provide more details (min 20 chars).</span>}
+          {errors.requirements && <span className="text-xs text-ns-error mt-1 block">Please provide more details (min 20 chars).</span>}
         </div>
 
         {/* Submit */}
         <button 
           type="submit" 
           disabled={formState === 'submitting'}
-          className="btn-primary w-full py-4 text-base mt-2"
+          className="btn-primary w-full py-4 text-[13px] mt-2 tracking-widest"
         >
           {formState === 'submitting' ? 'Submitting Inquiry...' : 'Submit Project Inquiry'}
         </button>
 
         {/* Status Messages */}
         {formState === 'success' && (
-          <div className="p-4 mt-4 bg-green-500/10 border border-green-500/20 rounded-lg flex items-center gap-3">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-4 mt-4 bg-ns-emerald/10 border border-ns-emerald/30 rounded-lg flex items-center gap-3">
+            <svg className="w-5 h-5 text-ns-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
-            <p className="text-sm text-green-500">Inquiry submitted successfully. We'll be in touch within 24 hours.</p>
+            <p className="text-sm font-semibold text-ns-emerald">Inquiry submitted successfully. We'll be in touch within 24 hours.</p>
           </div>
         )}
         
         {formState === 'error' && (
-          <div className="p-4 mt-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center gap-3">
-            <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="p-4 mt-4 bg-ns-error/10 border border-ns-error/30 rounded-lg flex items-center gap-3">
+            <svg className="w-5 h-5 text-ns-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-red-500">Something went wrong. Please email us directly at hello@infinityx.com.</p>
+            <p className="text-sm font-semibold text-ns-error">Something went wrong. Please email us directly.</p>
           </div>
         )}
       </form>
