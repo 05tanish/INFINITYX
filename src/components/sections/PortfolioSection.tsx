@@ -41,7 +41,8 @@ const PortfolioCard = ({ item, index }: { item: PortfolioItem; index: number }) 
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.35, delay: index * 0.06 }}
-      className="pro-card overflow-hidden group bg-ns-navy border-ns-graphite hover:border-ns-gold/30"
+      className="pro-card overflow-hidden group bg-ns-navy border-ns-graphite hover:border-ns-gold/30 cursor-none"
+      data-cursor="view"
     >
       {/* Image */}
       <div className="relative h-56 overflow-hidden bg-ns-black">

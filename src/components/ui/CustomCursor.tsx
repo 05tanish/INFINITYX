@@ -1,92 +1,191 @@
-import { useEffect, useState } from 'react';
-import { motion, useSpring } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useSpring, AnimatePresence } from 'framer-motion';
+
+type CursorState = 'default' | 'hover' | 'click' | 'view' | 'drag' | 'text' | 'link';
+
+const LABELS: Record<CursorState, string> = {
+  default: '',
+  hover: '',
+  click: 'Click',
+  view: 'View',
+  drag: 'Drag',
+  text: '',
+  link: 'Open',
+};
 
 const CustomCursor = () => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [pos, setPos] = useState({ x: -100, y: -100 });
+  const [state, setState] = useState<CursorState>('default');
+  const [isClicking, setIsClicking] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
+  const rafRef = useRef<number | null>(null);
 
-  // Smooth spring configuration for the trailing ring
-  const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
-  const cursorXSpring = useSpring(0, springConfig);
-  const cursorYSpring = useSpring(0, springConfig);
+  const springCfg = { damping: 28, stiffness: 300, mass: 0.4 };
+  const trailX = useSpring(-100, springCfg);
+  const trailY = useSpring(-100, springCfg);
 
   useEffect(() => {
-    // Detect mobile/touch devices where cursor shouldn't render
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window || navigator.maxTouchPoints > 0);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
+    const isTouchDevice =
+      window.innerWidth <= 1024 ||
+      'ontouchstart' in window ||
+      navigator.maxTouchPoints > 0;
+    setIsMobile(isTouchDevice);
+    if (isTouchDevice) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-      
-      // We offset the spring by half the cursor size (e.g., 40px / 2 = 20px) to center it
-      cursorXSpring.set(e.clientX - 20);
-      cursorYSpring.set(e.clientY - 20);
-    };
+    // Hide the system cursor
+    document.documentElement.style.cursor = 'none';
 
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      // Triggers hover intent if clicking buttons, links, or inputs
-      if (
-        target.tagName.toLowerCase() === 'button' ||
-        target.tagName.toLowerCase() === 'a' ||
-        target.closest('button') ||
-        target.closest('a') ||
-        target.classList.contains('glass-card') ||
-        target.classList.contains('advantage-card')
+    const onMove = (e: MouseEvent) => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      rafRef.current = requestAnimationFrame(() => {
+        setPos({ x: e.clientX, y: e.clientY });
+        trailX.set(e.clientX);
+        trailY.set(e.clientY);
+      });
+
+      // Detect what element the cursor is over
+      const el = e.target as HTMLElement;
+      const tag = el.tagName.toLowerCase();
+
+      if (el.closest('[data-cursor="drag"]') || el.classList.contains('draggable')) {
+        setState('drag');
+      } else if (el.closest('[data-cursor="view"]') || el.closest('.portfolio-card') || el.closest('.case-study')) {
+        setState('view');
+      } else if (
+        tag === 'a' ||
+        el.closest('a') ||
+        el.closest('nav')
       ) {
-        setIsHovering(true);
+        setState('link');
+      } else if (
+        tag === 'button' ||
+        el.closest('button') ||
+        el.getAttribute('role') === 'button' ||
+        el.closest('[role="button"]')
+      ) {
+        setState('click');
+      } else if (
+        tag === 'input' ||
+        tag === 'textarea' ||
+        tag === 'select' ||
+        el.closest('input') ||
+        el.closest('textarea')
+      ) {
+        setState('text');
       } else {
-        setIsHovering(false);
+        setState('default');
       }
     };
 
-    if (!isMobile) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseover', handleMouseOver);
-    }
+    const onMouseDown = () => setIsClicking(true);
+    const onMouseUp = () => setIsClicking(false);
+    const onLeave = () => setPos({ x: -200, y: -200 });
+
+    window.addEventListener('mousemove', onMove, { passive: true });
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    document.documentElement.addEventListener('mouseleave', onLeave);
 
     return () => {
-      window.removeEventListener('resize', checkMobile);
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseover', handleMouseOver);
+      document.documentElement.style.cursor = '';
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+      document.documentElement.removeEventListener('mouseleave', onLeave);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [cursorXSpring, cursorYSpring, isMobile]);
+  }, [isMobile]);
 
   if (isMobile) return null;
 
+  const isExpanded = state === 'view' || state === 'drag';
+  const hasLabel = LABELS[state] !== '';
+  const label = LABELS[state];
+
+  // Ring size: big with label text, medium on hover, small default
+  const ringSize = isExpanded ? 80 : state !== 'default' ? 48 : 36;
+  const dotSize = state === 'text' ? 2 : 6;
+  const ringOpacity = state === 'default' ? 0.35 : 0.9;
+  const ringColor =
+    state === 'view' || state === 'drag'
+      ? 'rgba(212,175,55,0.15)'   // gold tint fill
+      : 'transparent';
+  const ringBorder =
+    state === 'click'
+      ? '#D4AF37'
+      : state === 'link'
+      ? '#4A90E2'
+      : state === 'view' || state === 'drag'
+      ? '#D4AF37'
+      : state === 'text'
+      ? '#4A90E2'
+      : 'rgba(255,255,255,0.5)';
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-[9999]" style={{ filter: 'url(#goo)' }}>
-      {/* Tiny solid dot acting as the precise mouse point */}
+    <>
+      {/* Trailing ring */}
       <motion.div
-        className="absolute w-4 h-4 bg-brand-white rounded-full mix-blend-difference"
-        animate={{
-          x: mousePosition.x - 8, // Center offset
-          y: mousePosition.y - 8,
-          scale: isHovering ? 0 : 1, // Hide dot when hovering
-          opacity: 1,
-        }}
-        transition={{ type: 'tween', ease: 'backOut', duration: 0 }}
-      />
-      
-      {/* Glow trailing liquid ring */}
-      <motion.div
-        className="absolute w-10 h-10 rounded-full bg-brand-purple"
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full flex items-center justify-center"
         style={{
-          x: cursorXSpring,
-          y: cursorYSpring,
+          x: trailX,
+          y: trailY,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: ringSize,
+          height: ringSize,
+          backgroundColor: ringColor,
+          border: `1.5px solid ${ringBorder}`,
+          opacity: ringOpacity,
         }}
         animate={{
-          scale: isHovering ? 3 : 1,
-          backgroundColor: isHovering ? '#D4AF37' : '#8A2BE2', // shifts from Purple to Gold when merging
+          width: ringSize,
+          height: ringSize,
+          backgroundColor: ringColor,
+          borderColor: ringBorder,
+          scale: isClicking ? 0.85 : 1,
+          opacity: ringOpacity,
         }}
-        transition={{ duration: 0.2 }}
+        transition={{ duration: 0.18, ease: 'easeOut' }}
+      >
+        {/* Label inside ring */}
+        <AnimatePresence mode="wait">
+          {hasLabel && (
+            <motion.span
+              key={label}
+              className="text-[10px] font-bold uppercase tracking-[0.15em] select-none"
+              style={{ color: ringBorder }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.12 }}
+            >
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {/* Precise dot */}
+      <motion.div
+        className="fixed top-0 left-0 pointer-events-none z-[9999] rounded-full bg-white"
+        style={{
+          x: pos.x,
+          y: pos.y,
+          translateX: '-50%',
+          translateY: '-50%',
+          width: dotSize,
+          height: dotSize,
+        }}
+        animate={{
+          width: dotSize,
+          height: dotSize,
+          opacity: state === 'text' ? 1 : isExpanded ? 0 : 1,
+          backgroundColor: state === 'click' ? '#D4AF37' : state === 'link' ? '#4A90E2' : '#ffffff',
+          scale: isClicking ? 0.6 : 1,
+        }}
+        transition={{ duration: 0.1 }}
       />
-    </div>
+    </>
   );
 };
 
